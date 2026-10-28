@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>زفاف علي وشهد</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="أنتم مدعوون لحضور حفل زفاف علي وشهد">
+<meta name="theme-color" content="#EFE6D5">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<!-- the envelope shows first and the lace and photo right after it; the CSS and script find them late, so fetch them now -->
+<link rel="preload" href="assets/envelope.jpg" as="image" fetchpriority="high">
+<link rel="preload" href="assets/lace.jpg" as="image">
+<link rel="preload" href="couple.jpg" as="image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Great+Vibes&family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Noto+Nastaliq+Urdu&display=swap">
+<style>
+/* Layout: a lace-and-pearl envelope fills the screen; opening it reveals a stack of full-height paper pages (names, save the date, details, evening, reply).
+   Palette: ivory paper and white lace like the bride's dress, pearls, jewelry gold. The seal is a gold honeycomb brooch, because Shahd means honeycomb. */
+:root {
+  --paper: #F6F0E4;      /* envelope and page ground */
+  --seam: #EFE5D4;       /* lace edge tone, shows where pages blend */
+  --pearl: #FFFDF8;      /* sheets, lace highlights */
+  --shade: #E6DAC5;      /* lace shadow, seams */
+  --gold: #B8924A;       /* lines, frames, brooch */
+  --gold-deep: #6F5220;  /* gold text, dark enough to read on lace */
+  --ink: #2F261D;        /* body text */
+  --muted: #5A4C3D;      /* secondary text */
+  --line: rgba(184, 146, 74, .35);
+  --on-gold: #FFFDF8;
+
+  /* Arabic: Amiri, a calligraphic naskh, sets the text: fine strokes that stay easy to read at every size.
+     The couple's names and initials are in nastaliq, the flowing Persian hand, to set them apart */
+  --f-script: "Amiri", serif;
+  --f-initials: "Noto Nastaliq Urdu", "Amiri", serif;
+  --f-serif: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", serif;
+
+  --s-1: 1.1rem; --s0: 1.28rem; --s1: 1.55rem; --s2: 2.1rem; --s3: 3rem;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-serif);
+  font-size: var(--s0);
+  line-height: 1.6;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+html.locked, html.locked body { overflow: hidden; }
+:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 3px; border-radius: 4px; }
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* paper grain */
+body::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .45 0 0 0 0 .3 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* lace drawing, shared by envelope and pages; colors pass into <use> copies through custom properties */
+.lace {
+  overflow: visible;
+  --lace-st: #FFFDF8; --lace-lf: #FFFDF8; --lace-edge: #F1E8D8;
+  --emboss: drop-shadow(0 1.2px .6px rgba(120, 92, 52, .32));
+}
+.st { fill: none; stroke: var(--lace-st); stroke-width: 2.4; stroke-linecap: round; }
+.lf { fill: var(--lace-lf); stroke: var(--lace-edge); stroke-width: .6; }
+.net { fill: none; stroke: var(--lace-st); stroke-width: .7; opacity: .75; }
+.emboss { filter: var(--emboss); }
+
+/* ---------- Envelope ---------- */
+.intro {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center;
+  background: radial-gradient(80% 60% at 50% 50%, #EFE6D6, #E2D5BF);
+  transition: opacity 1s ease, visibility 1s;
+}
+.intro.is-gone { opacity: 0; visibility: hidden; }
+.stage {
+  position: relative;
+  width: min(100vw, 540px);
+  height: 100%;
+  background: #EFE6D5 url("assets/envelope.jpg") center / cover no-repeat;
+  box-shadow: 0 0 80px rgba(110, 85, 50, .18);
+  overflow: hidden;
+  perspective: 1600px;
+  transition: transform 1.1s cubic-bezier(.6,0,.3,1) 1.2s, opacity .9s ease 1.4s;
+}
+/* sits over the leaf clasp printed in the envelope image */
+.brooch {
+  position: absolute; z-index: 3;
+  left: 51.4%; top: 47.6%;
+  width: clamp(184px, 52vw, 214px); height: clamp(184px, 52vw, 214px);
+  transform: translate(-50%, -50%);
+  border: 0; padding: 0; background: none; cursor: pointer;
+  filter: drop-shadow(0 6px 6px rgba(90, 64, 24, .35));
+  transition: transform .4s ease, opacity .4s ease;
+}
+.brooch { border-radius: 50%; filter: none; }
+.brooch svg { display: none; }
+.brooch:hover { transform: translate(-50%, -50%) scale(1.06); }
+.brooch:hover::after { border-color: var(--gold); }
+.brooch:focus-visible { border-radius: 50%; outline-offset: 8px; }
+/* a fixed gold ring around the gold leaf */
+.brooch::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--gold); box-shadow: inset 0 0 0 4px rgba(255, 253, 248, .35), inset 0 0 0 5px rgba(184, 146, 74, .45); }
+/* the couple's initials stand outside the ring, the groom's on the left where reading starts and the bride's on the right,
+   each tilted a little, in gold foil, with an inked flourish and a pearl beneath, and are penned in once the envelope appears */
+.ini {
+  position: absolute; top: 50%;
+  font-family: var(--f-initials); font-size: clamp(3.6rem, 14vw, 4.4rem); line-height: 1;
+  padding: .2em .15em .45em;
+  background: linear-gradient(160deg, #C9A45C 10%, #6F5220 55%, #A8843E 85%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: .9px #7A5A22;  /* the script faces are hairline thin; the stroke gives the foil some body */
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .8)) drop-shadow(0 2px 3px rgba(90, 64, 24, .25));
+  animation: pen-ltr .8s cubic-bezier(.45, .05, .35, 1) .3s both;
+}
+.ini::after {
+  content: ""; position: absolute; left: 50%; bottom: .22em;
+  width: 1.15em; height: .32em; transform: translateX(-50%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 16'%3E%3Cpath d='M57 4 C44 12 26 13 12 9 C5 7 2 10 4 13 C6 15 10 13 8 11' fill='none' stroke='%23B8924A' stroke-width='1.3' stroke-linecap='round'/%3E%3Ccircle cx='57' cy='4' r='2.2' fill='%23F7F1E6' stroke='%23B8924A' stroke-width='.6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.ini-a { right: 100%; margin-right: 12px; transform: translateY(-52%) rotate(2deg); font-family: var(--f-script); }  /* A keeps the Pinyon form; only the S uses Great Vibes */
+.ini-s { left: 100%; margin-left: 4px; transform: translateY(-46%) rotate(-7deg); animation-delay: .9s; }
+.ini-a::after { transform: translateX(-50%) scaleX(-1); }
+@keyframes pen-ltr { from { clip-path: inset(-50% 100% -50% -5%); } to { clip-path: inset(-50% -15% -50% -15%); } }
+.brooch svg { width: 100%; height: 100%; overflow: visible; }
+.brooch::after {
+  content: ""; position: absolute; inset: -14px; border-radius: 50%;
+  border: 1px solid rgba(184, 146, 74, .55);
+  animation: pulse 2.6s ease-out infinite;
+}
+@keyframes pulse { from { transform: scale(.7); opacity: 1; } to { transform: scale(1.35); opacity: 0; } }
+
+.intro-text {
+  position: absolute; z-index: 3; left: 0; right: 0; bottom: max(36px, env(safe-area-inset-bottom, 0px));
+  text-align: center; display: grid; gap: 2px;
+  justify-self: center;
+  margin-inline: auto; width: fit-content;
+  padding: 10px 28px;
+  background: radial-gradient(closest-side, rgba(244, 236, 223, .95), rgba(244, 236, 223, .8) 60%, transparent);
+}
+.intro-to { font-family: var(--f-script); font-size: 2.1rem; color: var(--gold-deep); margin: 0; line-height: 1.3; }
+.intro-hint { font-style: italic; color: var(--muted); margin: 0; font-size: var(--s-1); }
+
+.intro.is-opening .brooch { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+.intro.is-opening .stage { filter: blur(2px); }
+.intro.is-opening .brooch::after { display: none; }
+.intro.is-opening .intro-text { opacity: 0; transition: opacity .4s; }
+.intro.is-opening .stage { transform: scale(1.12); opacity: 0; transition-delay: .35s, .45s; }
+
+/* ---------- Pages ---------- */
+/* each page carries its own lace-and-roses frame; the frame fades out at the top and bottom and
+   pages overlap by that fade, so one page's roses melt into the next with no seam.
+   The veil hides the middle of the source image. */
+main { position: relative; z-index: 1; }
+html { scroll-snap-type: y proximity; }
+body { background: var(--seam); }
+.page {
+  --fade: 90px;
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  max-width: 560px;
+  margin-inline: auto;
+  display: grid; place-items: center;
+  padding-block: max(clamp(72px, 16vw, 96px), calc(var(--fade) + 20px));
+  padding-left: max(28px, env(safe-area-inset-left, 0px));
+  padding-right: max(28px, env(safe-area-inset-right, 0px));
+  scroll-snap-align: start;
+  overflow: hidden;
+}
+.page + .page { margin-top: calc(var(--fade) * -1); }
+.page::after {
+  content: ""; position: absolute; inset: 0; z-index: -2;
+  background: url("assets/lace.jpg") center / 100% 100% no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+          mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+}
+.page:first-child::after {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fade)), transparent);
+          mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fade)), transparent);
+}
+.page:last-child::after {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--fade));
+          mask-image: linear-gradient(to bottom, transparent, #000 var(--fade));
+}
+.page::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse 66% 58% at 50% 52%, var(--paper) 64%, rgba(246, 240, 228, 0) 100%);
+}
+@media (min-width: 600px) {
+  .page { min-height: min(100svh, 1000px); }
+}
+.sheet {
+  position: relative;
+  width: 100%; max-width: 480px;
+  padding: clamp(40px, 9vw, 64px) clamp(22px, 7vw, 52px);
+  text-align: center;
+}
+
+/* the script face is hairline thin, so every script line gets a faint stroke to read clearly on lace */
+.script, .names .n, .families p, .intro-to, .venue, .closing .n, .done { -webkit-text-stroke: .4px currentColor; }
+.script { font-family: var(--f-script); font-weight: 400; color: var(--gold-deep); line-height: 1.15; margin: 0; }
+h2.script { font-size: clamp(2.2rem, 10.5vw, 3.4rem); margin-bottom: 14px; text-wrap: balance; }
+.small { font-size: var(--s-1); color: var(--muted); font-style: italic; margin: 0; }
+/* the Quran verse stays in Arabic, set in Amiri, a naskh face made for Quranic text */
+/* the Quran verse stays in Arabic, set in Amiri (a naskh face made for Quranic text), one phrase per line */
+.verse { font-family: "Amiri", "Noto Naskh Arabic", "Traditional Arabic", serif; color: var(--gold-deep); margin: 0 auto; text-align: center; }
+.verse blockquote { margin: 0; display: grid; justify-items: center; font-size: clamp(1.15rem, 5.2vw, 1.45rem); line-height: 1.9; }
+.verse blockquote span { white-space: nowrap; }
+.verse figcaption { margin-top: 4px; font-size: .95rem; color: var(--muted); line-height: 1.6; }
+
+/* opening page: one rhythm between verse, photo, families, names and date */
+.opening { padding-block: clamp(110px, 28vw, 124px) max(clamp(84px, 22vw, 110px), calc(var(--fade) + 20px)); }
+.opening .sheet, .names-page .sheet { display: grid; justify-items: center; gap: clamp(18px, 5vw, 26px); padding-block: 0; }
+.opening .sheet > *, .names-page .sheet > * { margin: 0; }
+.names-page .families { gap: 0; }
+.names-page .together { margin-top: -8px; }
+
+
+/* names */
+.names { display: grid; justify-items: center; margin: 6px 0; }
+.names .n { font-family: var(--f-script); font-size: clamp(4.6rem, 22vw, 7.5rem); color: var(--gold-deep); line-height: 1.05; font-weight: 400; }
+/* "and" between the names is a calligraphic gold ampersand with mirrored flourishes */
+.names .amp-orn { display: block; width: clamp(220px, 70vw, 300px); height: auto; margin-block: -.05em .1em; overflow: visible; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.families { display: grid; justify-items: center; gap: 0; margin-bottom: 6px; }
+.families p { margin: 0; font-family: var(--f-script); font-size: clamp(1.9rem, 8vw, 2.4rem); color: var(--gold-deep); line-height: 1.25; }
+.families .amp-sm { font-style: italic; font-weight: 600; color: var(--gold-deep); font-size: 1.2rem; line-height: 1.2; }
+.together { font-size: var(--s0); font-style: italic; margin: 4px auto 0; max-width: 22rem; color: var(--muted); text-wrap: balance; }
+.request { white-space: pre-line; margin: 0 auto; max-width: 22rem; font-size: var(--s1); line-height: 1.5; text-wrap: balance; }
+.js.ready-anim .couple { animation: rise .9s ease both; }
+.js.ready-anim .names { animation: rise 1s ease .2s both; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* calendar */
+.month { font-size: var(--s1); letter-spacing: .12em; margin: 0 0 14px; font-weight: 500; }
+.cal {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 4px 0;
+  max-width: 330px; margin: 0 auto;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.cal span { display: grid; place-items: center; height: 40px; font-size: 1.1rem; position: relative; }
+.cal .dow { font-style: italic; color: var(--muted); font-size: 1.05rem; height: 30px; }
+/* one shape language across the invitation: the photo's arch, pearls and hairline gold */
+.cal .day-on { color: var(--on-gold); font-weight: 600; z-index: 0; }
+.cal .day-on::before {
+  content: ""; position: absolute; width: 36px; height: 36px; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #D9B872, var(--gold) 60%, #9C7632);
+  box-shadow: 0 0 0 3px var(--pearl), 0 0 0 4px var(--gold);
+  z-index: -1;
+}
+.spelled { margin: 24px auto 0; font-size: var(--s1); line-height: 1.5; text-wrap: balance; max-width: 24rem; }
+
+/* countdown: four small arches, the same arch that frames the photo */
+.comb { display: flex; justify-content: center; gap: clamp(6px, 2.4vw, 12px); margin: 22px 0 30px; font-variant-numeric: tabular-nums lining-nums; }
+.cell {
+  position: relative;
+  width: clamp(58px, 17vw, 80px);
+  aspect-ratio: 3 / 4;
+  border-radius: 999px 999px 4px 4px;
+  border: 1px solid var(--gold);
+  background: var(--pearl);
+  box-shadow: inset 0 0 0 4px var(--pearl), inset 0 0 0 5px var(--line);
+  display: grid; place-content: center; text-align: center;
+  padding-top: 8px;
+}
+.cell b, .cell small { position: relative; display: block; }
+.cell b { font-size: clamp(1.5rem, 6vw, 2rem); font-weight: 500; color: var(--gold-deep); line-height: 1.1; }
+.cell small { font-size: .95rem; color: var(--muted); font-style: italic; line-height: 1.2; }
+.done { font-family: var(--f-script); font-size: var(--s2); color: var(--gold-deep); margin: 18px 0 30px; }
+
+.venue { font-family: var(--f-script); font-size: clamp(2.2rem, 9vw, 2.8rem); color: var(--gold-deep); margin: 8px 0 0; line-height: 1.2; }
+.address { margin: 4px 0 0; color: var(--muted); }
+.map { margin: 22px auto 0; aspect-ratio: 4 / 3; max-width: 100%; border: 1px solid var(--line); padding: 5px; background: var(--pearl); }
+.map iframe { width: 100%; height: 100%; border: 0; display: block; filter: sepia(.25) saturate(.8); }
+
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 46px; padding-inline: 24px;
+  border: 1px solid var(--gold); border-radius: 0;
+  font: 500 1.1rem/1 var(--f-serif); letter-spacing: .04em;
+  text-decoration: none; cursor: pointer;
+  transition: background-color .2s ease, color .2s ease;
+}
+.btn svg { width: 17px; height: 17px; flex: none; }
+.btn-gold { background: var(--gold); color: var(--on-gold); }
+.btn-gold:hover { background: var(--gold-deep); border-color: var(--gold-deep); }
+.btn-line { background: transparent; color: var(--gold-deep); }
+.btn-line:hover { background: rgba(184, 146, 74, .1); }
+
+/* evening */
+.evening { list-style: none; margin: 8px auto 0; padding: 0; max-width: 20rem; display: grid; gap: 18px; }
+.evening li { display: grid; gap: 0; }
+.evening time { font-size: var(--s-1); font-weight: 600; color: var(--gold-deep); letter-spacing: .08em; }
+.evening strong { font-weight: 500; font-size: var(--s1); line-height: 1.3; }
+.evening li + li::before { content: ""; justify-self: center; width: 7px; height: 7px; margin-bottom: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFFFFF, #E9DFCC 60%, #CDBB98); box-shadow: 0 0 0 1px var(--line); }
+
+/* reply */
+.form { display: grid; gap: 18px; text-align: start; margin-top: 22px; }
+.field { display: grid; gap: 6px; }
+.field > label, .field > legend { font-weight: 600; font-size: 1.05rem; padding: 0; color: var(--ink); }
+fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
+.input, .select, .area {
+  width: 100%; min-height: 48px; padding: 10px 14px;
+  border: 1px solid var(--line); border-radius: 0;
+  background: #FFFFFF; color: var(--ink);
+  font: 400 1.1rem var(--f-serif);
+}
+.area { min-height: 96px; resize: vertical; line-height: 1.5; }
+.input::placeholder, .area::placeholder { color: #A99B8B; font-style: italic; }
+.input:focus, .select:focus, .area:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,146,74,.2); }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.choice { position: relative; }
+.choice input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.choice span {
+  display: grid; place-items: center; min-height: 48px; padding: 6px 8px; text-align: center;
+  border: 1px solid var(--line); background: #FFFFFF; color: var(--muted); line-height: 1.25;
+  font-style: italic; transition: all .2s ease;
+}
+.choice input:checked + span { background: var(--gold); border-color: var(--gold); color: var(--on-gold); font-style: normal; font-weight: 600; }
+.choice input:focus-visible + span { outline: 2px solid var(--gold-deep); outline-offset: 3px; }
+.error { color: #9C3B22; font-size: 1rem; margin: 0; }
+.form .btn { width: 100%; }
+.btn:disabled { opacity: .6; cursor: progress; }
+#sendError { overflow-wrap: anywhere; }
+.sent { border: 1px solid var(--gold); padding: 18px; text-align: center; background: var(--paper); }
+.sent p { margin: 0 0 12px; }
+
+/* couple photo, set in an arched window like the top of a framed portrait */
+.couple {
+  position: relative;
+  width: min(100%, 340px);
+  margin: 0 auto;
+  padding: 8px 8px 0;
+  display: grid; justify-items: center; align-items: end;
+}
+.couple::before {
+  content: ""; position: absolute; inset: 0;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(175deg, #F3EADB, #E8DAC2);
+  box-shadow: inset 0 0 0 1px var(--line), inset 0 0 0 6px var(--pearl), inset 0 0 0 7px var(--line);
+}
+.couple img {
+  position: relative; z-index: 1;
+  width: 100%; height: auto; max-width: 100%;
+  aspect-ratio: 3 / 4; object-fit: cover; object-position: center 40%;
+  border-radius: 999px 999px 0 0;
+  /* the photo is cropped at the waist, so the bottom edge fades into the card */
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 99%);
+          mask-image: linear-gradient(to bottom, #000 80%, transparent 99%);
+}
+
+/* ornament rule and monogram */
+.orn { display: block; width: min(62%, 220px); height: auto; aspect-ratio: 10 / 1; margin: 2px auto 18px; overflow: visible; }
+.names-page .orn { margin: 0 auto; }
+.monogram { display: block; width: clamp(150px, 46vw, 190px); height: auto; margin: 0 auto 22px; overflow: visible; }
+.monogram .ring { fill: none; stroke: var(--gold); stroke-width: .8; }
+.monogram .ring-in { fill: none; stroke: var(--line); stroke-width: .6; }
+.monogram text { font-family: var(--f-initials); fill: var(--gold-deep); stroke: var(--gold-deep); stroke-width: .5; }
+.monogram #monoA { font-family: var(--f-script); }
+.monogram .amp { font-family: var(--f-initials); font-weight: 400; fill: var(--gold); stroke: none; }
+.dateline { margin: 18px 0 0; font-size: var(--s0); letter-spacing: .32em; color: var(--gold-deep); font-weight: 600; font-variant-numeric: lining-nums; }
+.closing .sheet { display: grid; justify-items: center; gap: 6px; }
+.closing .n { font-family: var(--f-script); font-size: clamp(2.8rem, 12vw, 3.6rem); color: var(--gold-deep); margin: 0; line-height: 1.2; }
+
+/* music toggle */
+.music {
+  position: fixed; z-index: 40;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid var(--gold); background: var(--pearl); color: var(--gold-deep);
+  display: grid; place-items: center; cursor: pointer;
+  box-shadow: 0 6px 16px rgba(110, 85, 50, .2);
+}
+.music svg { width: 20px; height: 20px; }
+
+/* rose petals that burst from the gold leaf when the envelope opens, then drift down over the first page */
+.petals { position: fixed; inset: 0; z-index: 55; pointer-events: none; overflow: hidden; }
+.petal {
+  position: absolute; left: 0; top: 0;
+  width: var(--w); height: calc(var(--w) * 1.15);
+  border-radius: 70% 70% 45% 45% / 85% 85% 30% 30%;
+  background: radial-gradient(ellipse at 50% 85%, var(--c2), var(--c1) 70%);
+  box-shadow: inset 0 -1px 2px rgba(160, 110, 80, .18), 0 1px 2px rgba(110, 85, 50, .15);
+  will-change: transform, opacity;
+}
+
+/* language switch: a pearl button in the top corner, above the envelope too, linking to the other language */
+.lang {
+  position: fixed; z-index: 60;
+  inset-inline-end: 16px;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid var(--gold); background: var(--pearl); color: var(--gold-deep);
+  display: grid; place-items: center; text-decoration: none;
+  box-shadow: inset 0 0 0 3px var(--pearl), inset 0 0 0 4px var(--line), 0 6px 16px rgba(110, 85, 50, .2);
+  font: 700 1.55rem/1 "Amiri", serif; padding-bottom: 4px;
+  transition: background-color .2s ease;
+}
+.lang:hover { background: #F3EADB; }
+.music[aria-pressed="false"] .on, .music[aria-pressed="true"] .off { display: none; }
+
+@media (max-width: 380px) {
+  .choices { grid-template-columns: 1fr; }
+  .comb { gap: 4px; }
+  /* small phones: give the content the width the lace frame was taking */
+  .page { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .sheet { padding-inline: 8px; }
+  .cell b { font-size: 1.35rem; }
+  .cell small { font-size: .8rem; }
+}
+/* ---------- Arabic ---------- */
+/* Arabic has no italics and letter spacing breaks the joins, so both are turned off; naskh needs taller lines */
+*, ::placeholder { font-style: normal !important; }
+.month, .dateline, .btn, .evening time { letter-spacing: 0; }
+body { line-height: 1.85; }
+/* the English script lines get a stroke to thicken a hairline face; Amiri needs none */
+.script, .families p, .intro-to, .venue, .closing .n, .done { -webkit-text-stroke: 0; }
+/* the initials outside the gold ring swap sides: the groom's on the right where Arabic reading starts, the bride's on the left,
+   in nastaliq, penned right to left; nastaliq reaches further up and down, so the box grows to keep the gold over all of it */
+.ini { font-family: var(--f-initials); font-size: clamp(3.7rem, 14.5vw, 4.6rem); font-weight: 400; padding: .35em .12em .55em; -webkit-text-stroke: 0; animation-name: pen; }
+.ini::after { bottom: -.02em; transform: translateX(-50%); }
+.ini-a { left: 100%; right: auto; margin: 0 0 0 4px; transform: translateY(-52%) rotate(-7deg); }
+.ini-s { right: 100%; left: auto; margin: 0 4px 0 0; transform: translateY(-46%) rotate(7deg); }
+.ini-s::after { transform: translateX(-50%) scaleX(-1); }
+.intro-to { font-size: 2rem; line-height: 1.6; }
+h2.script { line-height: 1.5; }
+.families p { font-size: clamp(1.7rem, 7vw, 2.1rem); line-height: 1.6; }
+.families .amp-sm { font-family: var(--f-script); font-size: 1.5rem; }
+.together, .request { line-height: 1.8; }
+/* the names: nastaliq with full vowel marks, gold foil with a soft engraved edge; the first layer is the glint that crosses the foil */
+.names .n {
+  font-family: var(--f-initials);
+  font-weight: 400; font-size: clamp(4rem, 19vw, 6.4rem); line-height: 1.3;
+  background:
+    linear-gradient(110deg, transparent 30%, rgba(255, 249, 228, .95) 50%, transparent 70%) -150% 0 / 60% 100% no-repeat,
+    linear-gradient(170deg, #9C7632 10%, #6F5220 45%, #A8843E 70%, #6F5220);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: 0; filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .7));
+  /* the gold is painted only inside the box, so the box reaches up and down to the vowel marks without moving the line */
+  padding-block: .4em .7em; margin-block: -.4em -.7em;  /* nastaliq tails reach well below the line */
+}
+/* the groom's name ends in a long nastaliq tail, so the ornament sits clear below it and closer above the bride's name */
+.names .amp-orn { margin-block: .85em -.1em; }
+.names-page .names { padding-top: 26px; }  /* room for the marks over the groom's name */
+/* a calligrapher's flourish under the bride's name, inked out to both sides from a pearl */
+.names .swash { display: block; width: clamp(200px, 60vw, 260px); height: auto; margin-top: -.15em; overflow: visible; }
+.names-page .names + .orn { display: none; }  /* the flourish already closes the names; a second rule under it would crowd them */
+.swash .ink { fill: none; stroke: url(#goldEdge); stroke-linecap: round; stroke-dasharray: 1; }
+.swash circle { transform-box: fill-box; transform-origin: center; }
+
+/* the artist's hand, the first time the names come into view: each name is written right to left like a pen stroke,
+   the ornament opens out between them, the flourish is inked under the bride's name, then a glint crosses the gold foil now and then */
+.js .names:not(.write) > :not(.sr-only) { opacity: 0; }
+.names.write .n { animation: pen 1s cubic-bezier(.45, .05, .35, 1) both, foil 8s ease-in-out infinite; }
+.names.write .n:first-of-type { animation-delay: .1s, 3.2s; }
+.names.write .n:last-of-type { animation-delay: 1.2s, 3.5s; }
+.names.write .amp-orn { animation: unfold .7s ease-out .9s both; }
+.names.write .swash .ink { animation: ink .9s ease-in-out 2.1s both; }
+.names.write .swash circle { animation: dot .4s ease-out 2.9s both; }
+@keyframes pen { from { clip-path: inset(-50% -5% -50% 100%); } to { clip-path: inset(-50% -15% -50% -15%); } }
+@keyframes unfold { from { opacity: 0; transform: scaleX(.15); } to { opacity: 1; transform: none; } }
+@keyframes ink { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes dot { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: none; } }
+@keyframes foil { from { background-position: -150% 0, 0 0; } 25%, to { background-position: 250% 0, 0 0; } }
+.cal .dow { font-size: .9rem; }
+.cell small { font-size: .95rem; }
+.venue { line-height: 1.6; }
+.closing .n { font-family: var(--f-initials); line-height: 2.1; padding-bottom: .15em; font-weight: 400; -webkit-text-stroke: 0; }
+.monogram text, .monogram #monoA { font-family: var(--f-initials); stroke: none; }
+.lang { font: italic 600 1.25rem/1 "Cormorant Garamond", serif; padding-bottom: 2px; }
+.music { right: auto; inset-inline-end: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}
+</style>
+<noscript><style>.intro { display: none; } html.locked, html.locked body { overflow: auto; }</style></noscript>
+</head>
+<body>
+
+<!-- shared drawings -->
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="pearl" cx="35%" cy="32%" r="70%">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset=".55" stop-color="#F3ECDF"/>
+      <stop offset="1" stop-color="#D6C8B1"/>
+    </radialGradient>
+    <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F6E3A8"/>
+      <stop offset=".35" stop-color="#D2AA5A"/>
+      <stop offset=".6" stop-color="#9C7632"/>
+      <stop offset=".85" stop-color="#E4C67F"/>
+      <stop offset="1" stop-color="#B38B40"/>
+    </linearGradient>
+    <linearGradient id="goldEdge" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#7A5A22"/>
+      <stop offset="1" stop-color="#F0D791"/>
+    </linearGradient>
+    <pattern id="mesh" width="10" height="17.32" patternUnits="userSpaceOnUse">
+      <path class="net" d="M0 0 L5 2.89 L5 8.66 L0 11.55 M5 2.89 L10 0 M5 8.66 L10 11.55 M0 11.55 L0 17.32 M10 11.55 L10 17.32"/>
+    </pattern>
+    <path id="leaf" d="M0 0 C5 -5.5 13 -5.5 19 0 C13 5.5 5 5.5 0 0Z"/>
+    <g id="flower">
+      <ellipse class="lf" rx="4.2" ry="8.5" cy="-8"/>
+      <ellipse class="lf" rx="4.2" ry="8.5" cy="-8" transform="rotate(72)"/>
+      <ellipse class="lf" rx="4.2" ry="8.5" cy="-8" transform="rotate(144)"/>
+      <ellipse class="lf" rx="4.2" ry="8.5" cy="-8" transform="rotate(216)"/>
+      <ellipse class="lf" rx="4.2" ry="8.5" cy="-8" transform="rotate(288)"/>
+      <circle r="3.4" fill="url(#pearl)"/>
+    </g>
+    <g id="half">
+      <path class="st" d="M0 22 C40 10 92 20 102 56 C110 86 86 106 66 99 C50 93 52 74 67 75"/>
+      <path class="st" d="M0 62 C26 62 46 82 41 112 C37 136 16 141 11 126"/>
+      <path class="st" d="M102 56 C116 36 112 14 94 8"/>
+      <path class="st" d="M41 112 C52 132 46 160 26 176 C16 184 8 192 1 206"/>
+      <path class="st" d="M66 99 C86 118 96 140 90 160"/>
+      <use href="#leaf" class="lf" transform="translate(102 56) rotate(-62)"/>
+      <use href="#leaf" class="lf" transform="translate(41 112) rotate(38)"/>
+      <use href="#leaf" class="lf" transform="translate(94 8) rotate(196)"/>
+      <use href="#leaf" class="lf" transform="translate(26 176) rotate(128)"/>
+      <use href="#leaf" class="lf" transform="translate(90 160) rotate(96)"/>
+      <use href="#leaf" class="lf" transform="translate(52 40) rotate(-20) scale(.8)"/>
+      <use href="#flower" transform="translate(62 142) scale(.9)"/>
+      <circle r="3.2" cx="22" cy="42" fill="url(#pearl)"/>
+      <circle r="2.6" cx="78" cy="34" fill="url(#pearl)"/>
+      <circle r="3.4" cx="112" cy="84" fill="url(#pearl)"/>
+      <circle r="2.4" cx="30" cy="96" fill="url(#pearl)"/>
+      <circle r="2.8" cx="50" cy="186" fill="url(#pearl)"/>
+      <circle r="2" cx="118" cy="104" fill="url(#pearl)"/>
+      <circle r="2" cx="84" cy="182" fill="url(#pearl)"/>
+      <circle r="1.3" cx="108" cy="30" fill="#D9C79D"/>
+      <circle r="1.3" cx="70" cy="122" fill="#D9C79D"/>
+    </g>
+    <g id="motif" class="emboss">
+      <use href="#half"/>
+      <use href="#half" transform="scale(-1 1)"/>
+      <path class="st" d="M0 10 L0 196"/>
+      <use href="#flower" transform="translate(0 44) scale(1.25)"/>
+      <use href="#leaf" class="lf" transform="translate(0 92) rotate(-50) scale(.8)"/>
+      <use href="#leaf" class="lf" transform="translate(0 92) rotate(-130) scale(.8)"/>
+      <circle r="3" cy="150" fill="url(#pearl)"/>
+      <circle r="2.6" cy="170" fill="url(#pearl)"/>
+      <circle r="2.2" cy="188" fill="url(#pearl)"/>
+      <use href="#leaf" class="lf" transform="translate(0 198) rotate(90)"/>
+    </g>
+    <!-- hairline gold rule with a pearl at its centre, used under headings -->
+    <symbol id="orn" viewBox="0 0 240 24">
+      <path d="M8 12 H96 M144 12 H232" fill="none" stroke="#A8843E" stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M96 12 C104 6 110 6 114 12 M96 12 C104 18 110 18 114 12 M144 12 C136 6 130 6 126 12 M144 12 C136 18 130 18 126 12" fill="none" stroke="#A8843E" stroke-width="1.1"/>
+      <circle cx="8" cy="12" r="1.6" fill="#B8924A"/>
+      <circle cx="232" cy="12" r="1.6" fill="#B8924A"/>
+      <circle cx="120" cy="12" r="5.5" fill="url(#pearl)" stroke="#B8924A" stroke-width=".9"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="intro" id="intro">
+  <div class="stage" id="stage">
+    <button class="brooch" id="brooch" type="button" aria-label="افتح الدعوة">
+      <span class="ini ini-a" id="iniA" aria-hidden="true">A</span>
+      <span class="ini ini-s" id="iniS" aria-hidden="true">S</span>
+      <svg viewBox="-50 -50 100 100" aria-hidden="true">
+        <g stroke="url(#goldEdge)" stroke-width="1.6" fill="url(#goldG)">
+          <polygon points="0,-36 15.6,-27 15.6,-9 0,0 -15.6,-9 -15.6,-27" transform="translate(0 2)"/>
+          <polygon points="0,-36 15.6,-27 15.6,-9 0,0 -15.6,-9 -15.6,-27" transform="translate(-15.6 29)"/>
+          <polygon points="0,-36 15.6,-27 15.6,-9 0,0 -15.6,-9 -15.6,-27" transform="translate(15.6 29)"/>
+        </g>
+        <g fill="none" stroke="#8C6A2C" stroke-width=".8" opacity=".7">
+          <polygon points="0,-31 11,-24.5 11,-11.5 0,-5 -11,-11.5 -11,-24.5" transform="translate(0 2)"/>
+          <polygon points="0,-31 11,-24.5 11,-11.5 0,-5 -11,-11.5 -11,-24.5" transform="translate(-15.6 29)"/>
+          <polygon points="0,-31 11,-24.5 11,-11.5 0,-5 -11,-11.5 -11,-24.5" transform="translate(15.6 29)"/>
+        </g>
+        <circle r="5.5" cx="0" cy="-16" fill="url(#pearl)" stroke="#C9B27A" stroke-width=".6"/>
+        <circle r="3.6" cx="-15.6" cy="11" fill="url(#pearl)"/>
+        <circle r="3.6" cx="15.6" cy="11" fill="url(#pearl)"/>
+      </svg>
+    </button>
+    <div class="intro-text">
+      <p class="intro-to" id="introTo">أنتم مدعوون</p>
+      <p class="intro-hint">اضغط على الورقة الذهبية لفتح الدعوة</p>
+    </div>
+  </div>
+</div>
+
+
+
+<main>
+  <!-- verse and photo -->
+  <section class="page opening" aria-label="الافتتاحية">
+    <div class="sheet">
+      <figure class="verse" lang="ar" dir="rtl">
+        <blockquote>
+          <span>﴿ وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم</span>
+          <span>مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا</span>
+          <span>وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ﴾</span>
+        </blockquote>
+        <figcaption>سورة الروم، الآية ٢١</figcaption>
+      </figure>
+      <figure class="couple" id="couple" hidden>
+        <img id="couplePhoto" alt="" width="960" height="1280">
+      </figure>
+    </div>
+  </section>
+
+  <!-- names: a page of their own, so no page is taller than the lace frame drawn for it -->
+  <section class="page names-page" aria-labelledby="names">
+    <div class="sheet">
+      <div class="families">
+        <p>عائلة <span data-groom-family></span></p>
+        <span class="amp-sm" aria-hidden="true">و</span>
+        <p>عائلة <span data-bride-family></span></p>
+      </div>
+      <p class="together">يتشرفون بدعوتكم لمشاركتهم فرحة زفاف أبنائهم</p>
+      <h1 class="names" id="names">
+        <span class="n" data-groom>Ali</span>
+        <span class="sr-only">و</span>
+        <svg class="amp-orn" viewBox="0 0 240 64" aria-hidden="true">
+          <defs>
+            <!-- one side of the flourish; the other side is its mirror -->
+            <g id="ampWing">
+              <path d="M96 38 C84 50 66 46 58 36 C50 26 36 26 30 34 C25 41 30 49 37 47 C42 45.5 42 39 37.5 39" fill="none" stroke="url(#goldEdge)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M94 26 C84 16 72 18 64 22 C56 26 46 22 46 15 C46 10 52 9 53.5 13" fill="none" stroke="url(#goldEdge)" stroke-width="1" stroke-linecap="round"/>
+              <path d="M58 36 C46 40 22 40 6 36" fill="none" stroke="#B8924A" stroke-width=".7" stroke-linecap="round" opacity=".7"/>
+              <use href="#leaf" fill="url(#goldG)" transform="translate(74 44.5) rotate(160) scale(.62)"/>
+              <use href="#leaf" fill="url(#goldG)" transform="translate(66 42) rotate(-140) scale(.5)"/>
+              <use href="#leaf" fill="url(#goldG)" transform="translate(72 19.5) rotate(200) scale(.5)"/>
+              <use href="#leaf" fill="url(#goldG)" transform="translate(64 22) rotate(130) scale(.42)"/>
+              <circle cx="84" cy="44" r="2.2" fill="url(#pearl)" stroke="#C9B27A" stroke-width=".4"/>
+              <circle cx="80" cy="18.6" r="1.6" fill="url(#pearl)" stroke="#C9B27A" stroke-width=".4"/>
+              <circle cx="6" cy="36" r="1.3" fill="url(#pearl)" stroke="#C9B27A" stroke-width=".4"/>
+            </g>
+          </defs>
+          <use href="#ampWing"/>
+          <use href="#ampWing" transform="translate(240 0) scale(-1 1)"/>
+          <!-- the و sits in a small gold ring, like the ring on the envelope -->
+          <circle cx="120" cy="34" r="19" fill="#F7F1E6" stroke="url(#goldEdge)" stroke-width="1"/>
+          <circle cx="120" cy="34" r="15.5" fill="none" stroke="#B8924A" stroke-width=".5" opacity=".6"/>
+          <text x="120" y="42" text-anchor="middle" font-size="30" font-weight="400" fill="url(#goldG)" stroke="#8A6A2E" stroke-width=".2" style="font-family: var(--f-initials)">و</text>
+        </svg>
+        <span class="n" data-bride>Shahd</span>
+        <svg class="swash" viewBox="0 0 240 40" aria-hidden="true">
+          <!-- two mirrored halves, written out rather than <use>d so the ink styling and drawing animation reach both -->
+          <g>
+            <path class="ink" pathLength="1" stroke-width="1.5" d="M114 12 C96 24 70 26 46 20 C30 16 18 19 16 27 C14 34 22 37 26 32"/>
+            <path class="ink" pathLength="1" stroke-width=".6" d="M108 18 C90 27 72 29 56 27"/>
+            <circle cx="26" cy="32" r="1.6" fill="url(#pearl)" stroke="#B8924A" stroke-width=".4"/>
+          </g>
+          <g transform="translate(240 0) scale(-1 1)">
+            <path class="ink" pathLength="1" stroke-width="1.5" d="M114 12 C96 24 70 26 46 20 C30 16 18 19 16 27 C14 34 22 37 26 32"/>
+            <path class="ink" pathLength="1" stroke-width=".6" d="M108 18 C90 27 72 29 56 27"/>
+            <circle cx="26" cy="32" r="1.6" fill="url(#pearl)" stroke="#B8924A" stroke-width=".4"/>
+          </g>
+          <circle cx="120" cy="10" r="3.2" fill="url(#pearl)" stroke="#B8924A" stroke-width=".6"/>
+        </svg>
+      </h1>
+      <svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><use href="#orn"/></svg>
+      <p class="request" data-when-where></p>
+    </div>
+  </section>
+
+  <!-- save the date -->
+  <section class="page" aria-labelledby="t-date">
+    <div class="sheet">
+      <h2 class="script" id="t-date">احفظوا الموعد</h2>
+      <svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><use href="#orn"/></svg>
+      <p class="month" id="month"></p>
+      <div class="cal" id="cal" aria-hidden="true"></div>
+      <p class="spelled" id="spelled"></p>
+    </div>
+  </section>
+
+  <!-- details -->
+  <section class="page" aria-labelledby="t-details">
+    <div class="sheet">
+      <h2 class="script" id="t-details">العدّ التنازلي</h2>
+      <svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><use href="#orn"/></svg>
+      <div class="comb" id="comb">
+        <div class="cell"><b id="cd-d">0</b><small>يوم</small></div>
+        <div class="cell"><b id="cd-h">0</b><small>ساعة</small></div>
+        <div class="cell"><b id="cd-m">0</b><small>دقيقة</small></div>
+        <div class="cell"><b id="cd-s">0</b><small>ثانية</small></div>
+      </div>
+      <p class="done" id="done" hidden>سعداء بوجودكم معنا</p>
+      <p class="small">يُقام الحفل في</p>
+      <p class="venue" data-venue></p>
+      <p class="address" data-address></p>
+      <div class="map" id="map" hidden></div>
+      <div class="actions">
+        <a class="btn btn-gold" id="mapLink" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+          اعرف الطريق
+        </a>
+        <a class="btn btn-line" id="calLink" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+          أضف إلى التقويم
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- evening -->
+  <section class="page" id="eveningSec" aria-labelledby="t-evening">
+    <div class="sheet">
+      <h2 class="script" id="t-evening">برنامج الحفل</h2>
+      <svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><use href="#orn"/></svg>
+      <ol class="evening" id="evening"></ol>
+    </div>
+  </section>
+
+  <!-- reply -->
+  <section class="page" aria-labelledby="t-reply">
+    <div class="sheet">
+      <h2 class="script" id="t-reply">نرجو تأكيد الحضور</h2>
+      <svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><use href="#orn"/></svg>
+      <p class="small">واتركوا كلمة للعروسين</p>
+      <form class="form" id="form" novalidate>
+        <div class="field">
+          <label for="guestName">الاسم</label>
+          <input class="input" id="guestName" type="text" dir="auto" autocomplete="name" placeholder="مثال: نور حسن">
+          <p class="error" id="nameError" hidden>اكتب اسمك ليصلنا ردك باسمك.</p>
+        </div>
+        <fieldset class="field">
+          <legend>هل ستحضر؟</legend>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="attend" id="attendYes" value="yes" checked><span>سأحضر بكل سرور</span></label>
+            <label class="choice"><input type="radio" name="attend" id="attendNo" value="no"><span>أعتذر عن الحضور</span></label>
+          </div>
+        </fieldset>
+        <div class="field" id="countField">
+          <label for="guestCount">عدد الحضور</label>
+          <select class="select" id="guestCount">
+            <option value="1">شخص واحد</option>
+            <option value="2">شخصان</option>
+            <option value="3">٣ أشخاص</option>
+            <option value="4">٤ أشخاص</option>
+            <option value="5">٥ أشخاص</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="wish">رسالة للعروسين <span class="small">(اختياري)</span></label>
+          <textarea class="area" id="wish" dir="auto" placeholder="تمنياتك لعلي وشهد"></textarea>
+        </div>
+        <button class="btn btn-gold" id="sendBtn" type="submit">أرسل ردّي</button>
+        <p class="error" id="sendError" role="alert" hidden></p>
+        <div class="sent" id="sent" role="status" hidden>
+          <p id="sentText"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- closing -->
+  <section class="page closing" aria-label="الختام">
+    <div class="sheet">
+      <svg class="monogram" viewBox="-80 -80 160 160" aria-hidden="true">
+        <circle class="ring" r="66"/>
+        <circle class="ring-in" r="58"/>
+        <g id="monoPearls"></g>
+        <text id="monoA" x="32" y="12" font-size="46" font-weight="400" text-anchor="middle">ع</text>
+        <text class="amp" x="0" y="10" font-size="28" text-anchor="middle">و</text>
+        <text id="monoS" x="-30" y="12" font-size="46" font-weight="400" text-anchor="middle">ش</text>
+      </svg>
+      <p class="small">مع خالص الحب والامتنان،</p>
+      <p class="n"><span data-groom>عَلِيّ</span> و <span data-bride>شَهْد</span></p>
+      <p class="small">ننتظركم لنحتفل معًا</p>
+      <p class="dateline" id="dateline"></p>
+    </div>
+  </section>
+</main>
+
+<a class="lang" id="lang" href="en.html" hreflang="en" lang="en" aria-label="English version">En</a>
+
+<button class="music" id="music" type="button" aria-pressed="false" aria-label="تشغيل الموسيقى" hidden>
+  <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M2 2l20 20"/></svg>
+  <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+</button>
+
+<script>
+/* =========================================================
+   Edit the wedding details here
+   ========================================================= */
+const WEDDING = {
+  // names are written with full vowel marks (tashkeel)
+  bride: "شَهْد",
+  groom: "عَلِيّ",
+  brideFamily: "حجاج",
+  groomFamily: "الجزيري",
+  // wedding day and time, Cairo time (7 PM)
+  date: "2026-11-15T19:00:00+02:00",
+  durationHours: 5,
+  venue: "قاعة ماس",
+  address: "",
+  // Google Maps link to the hall; leave "" to hide the directions button
+  mapUrl: "",
+  // map shown inside the page; leave "" to hide it
+  mapEmbed: "",
+  // replies and wishes arrive at this email
+  email: "sh223524@gmail.com",
+  // couple photo with the background removed, placed next to this page; leave "" to hide it
+  photo: "couple.jpg",
+  // song file placed next to this page (e.g. "song.mp3"); leave "" for no music
+  song: "song.mp3",
+  // evening program; leave [] to hide the page. Example: { time: "19:00", title: "Guests arrive" }
+  evening: []
+};
+/* ========================================================= */
+
+const root = document.documentElement;
+root.classList.add("js");
+const TZ = "Africa/Cairo";
+const when = new Date(WEDDING.date);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const fmt = (opts, d = when) => new Intl.DateTimeFormat("ar-EG", { timeZone: TZ, ...opts }).format(d);
+const setAll = (sel, text) => document.querySelectorAll(sel).forEach((el) => { el.textContent = text; });
+
+setAll("[data-bride]", WEDDING.bride);
+setAll("[data-groom]", WEDDING.groom);
+setAll("[data-venue]", WEDDING.venue);
+setAll("[data-address]", WEDDING.address);
+setAll("[data-bride-family]", WEDDING.brideFamily);
+setAll("[data-groom-family]", WEDDING.groomFamily);
+// nastaliq draws a ه inside a word as a small hook; in the names it is shown as the two-eyed ھ, the shape Arabic readers know
+document.querySelectorAll(".names .n, .closing .n span").forEach((el) => { el.textContent = el.textContent.replace(/ه/g, "ھ"); });
+// the names are written in by hand the first time their page comes into view
+const namesEl = document.getElementById("names");
+if (reduceMotion || !("IntersectionObserver" in window)) namesEl.classList.add("write");
+else new IntersectionObserver((entries, io) => {
+  if (entries[0].isIntersecting) { namesEl.classList.add("write"); io.disconnect(); }
+}, { threshold: .45 }).observe(namesEl);
+setAll("[data-when-where]", `${fmt({ weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+في ${WEDDING.venue}`);
+document.querySelector("[data-address]").hidden = !WEDDING.address;
+
+// monogram: the couple's initials inside a ring of pearls, and a printed-card date line
+// the first letter of each name, without its vowel mark
+document.getElementById("monoA").textContent = WEDDING.groom[0];
+document.getElementById("iniA").textContent = WEDDING.groom[0];
+document.getElementById("iniS").textContent = WEDDING.bride[0];
+document.getElementById("monoS").textContent = WEDDING.bride[0];
+const pearls = document.getElementById("monoPearls");
+for (let i = 0; i < 36; i++) {
+  const a = (i / 36) * Math.PI * 2;
+  const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  c.setAttribute("cx", (62 * Math.cos(a)).toFixed(2));
+  c.setAttribute("cy", (62 * Math.sin(a)).toFixed(2));
+  c.setAttribute("r", i % 3 === 0 ? "2.6" : "1.7");
+  c.setAttribute("fill", "url(#pearl)");
+  c.setAttribute("stroke", "#C2A464");
+  c.setAttribute("stroke-width", ".5");
+  pearls.appendChild(c);
+}
+document.getElementById("dateline").textContent =
+  fmt({ day: "numeric", month: "long", year: "numeric" });
+document.getElementById("eveningSec").hidden = WEDDING.evening.length === 0;
+if (WEDDING.photo) {
+  const img = document.getElementById("couplePhoto");
+  img.alt = `${WEDDING.groom} و${WEDDING.bride}`;
+  img.onload = () => {
+    document.getElementById("couple").hidden = false;
+
+  };
+  img.src = WEDDING.photo;
+}
+document.title = "زفاف علي وشهد";
+
+// calendar for the wedding month, weeks starting Sunday; numbers are read in Western digits, shown in Arabic ones
+const num = (opts) => Number(new Intl.DateTimeFormat("en-GB", { timeZone: TZ, ...opts }).format(when));
+const ar = (n) => n.toLocaleString("ar-EG");
+const y = num({ year: "numeric" });
+const mo = num({ month: "numeric" }) - 1;
+const dd = num({ day: "numeric" });
+document.getElementById("month").textContent = fmt({ month: "long", year: "numeric" });
+const cal = document.getElementById("cal");
+["أحد", "إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"].forEach((d) => {
+  const s = document.createElement("span"); s.className = "dow"; s.textContent = d; cal.appendChild(s);
+});
+const firstDow = new Date(Date.UTC(y, mo, 1)).getUTCDay();
+const daysIn = new Date(Date.UTC(y, mo + 1, 0)).getUTCDate();
+for (let i = 0; i < firstDow; i++) cal.appendChild(document.createElement("span"));
+for (let d = 1; d <= daysIn; d++) {
+  const s = document.createElement("span");
+  s.textContent = ar(d);
+  if (d === dd) s.className = "day-on";
+  cal.appendChild(s);
+}
+
+// date written out, the way a printed invitation reads
+const ORD = ["", "الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس", "السابع", "الثامن", "التاسع", "العاشر",
+  "الحادي عشر", "الثاني عشر", "الثالث عشر", "الرابع عشر", "الخامس عشر", "السادس عشر", "السابع عشر", "الثامن عشر", "التاسع عشر",
+  "العشرون", "الحادي والعشرون", "الثاني والعشرون", "الثالث والعشرون", "الرابع والعشرون", "الخامس والعشرون", "السادس والعشرون",
+  "السابع والعشرون", "الثامن والعشرون", "التاسع والعشرون", "الثلاثون", "الحادي والثلاثون"];
+const HOURS = ["الثانية عشرة", "الواحدة", "الثانية", "الثالثة", "الرابعة", "الخامسة", "السادسة", "السابعة", "الثامنة", "التاسعة", "العاشرة", "الحادية عشرة"];
+const hh = num({ hour: "numeric", hourCycle: "h23" });
+const mm = num({ minute: "numeric" });
+const part = hh < 12 ? "صباحًا" : hh < 17 ? "ظهرًا" : "مساءً";
+const timeWords = mm === 0 ? `${HOURS[hh % 12]}` : `${HOURS[hh % 12]} و${mm === 30 ? "النصف" : ar(mm) + " دقيقة"}`;
+document.getElementById("spelled").textContent =
+  `يوم ${fmt({ weekday: "long" })}، ${ORD[dd]} من ${fmt({ month: "long" })}، في تمام الساعة ${timeWords} ${part}`;
+
+// evening
+const evening = document.getElementById("evening");
+WEDDING.evening.forEach((p) => {
+  const [h, m] = p.time.split(":").map(Number);
+  const li = document.createElement("li");
+  li.innerHTML = "<time></time><strong></strong>";
+  li.querySelector("time").textContent = new Intl.DateTimeFormat("ar-EG", { hour: "numeric", minute: "2-digit" }).format(new Date(2000, 0, 1, h, m));
+  li.querySelector("strong").textContent = p.title;
+  evening.appendChild(li);
+});
+
+// links and map
+if (WEDDING.mapUrl) document.getElementById("mapLink").href = WEDDING.mapUrl;
+else document.getElementById("mapLink").hidden = true;
+const stamp = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+const end = new Date(when.getTime() + WEDDING.durationHours * 3600e3);
+document.getElementById("calLink").href =
+  "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+  "&text=" + encodeURIComponent("زفاف علي وشهد") +
+  "&dates=" + stamp(when) + "/" + stamp(end) +
+  "&location=" + encodeURIComponent(`${WEDDING.venue}, ${WEDDING.address}`);
+if (WEDDING.mapEmbed) {
+  const box = document.getElementById("map");
+  const f = document.createElement("iframe");
+  f.src = WEDDING.mapEmbed; f.loading = "lazy"; f.title = `خريطة ${WEDDING.venue}`;
+  f.referrerPolicy = "no-referrer-when-downgrade";
+  box.appendChild(f); box.hidden = false;
+}
+
+// countdown
+const cd = ["d", "h", "m", "s"].map((k) => document.getElementById("cd-" + k));
+function tick() {
+  let diff = Math.max(0, when - Date.now());
+  if (diff === 0) {
+    // the countdown runs until the wedding starts, then the page greets the guests
+    document.getElementById("t-details").textContent = "أهلًا بكم في حفل زفافنا";
+    document.getElementById("comb").hidden = true;
+    document.getElementById("done").hidden = false;
+    return;
+  }
+  const d = Math.floor(diff / 864e5); diff -= d * 864e5;
+  const h = Math.floor(diff / 36e5);  diff -= h * 36e5;
+  const m = Math.floor(diff / 6e4);   diff -= m * 6e4;
+  const s = Math.floor(diff / 1e3);
+  [d, h, m, s].forEach((v, i) => { cd[i].textContent = v.toLocaleString("ar-EG"); });
+  setTimeout(tick, 1000 - (Date.now() % 1000));
+}
+tick();
+
+// personal greeting: ?guest=نور
+let guest = "";
+try { guest = (new URLSearchParams(location.search).get("guest") || "").trim().slice(0, 40); } catch (e) {}
+document.getElementById("lang").href += location.search;  // the other language keeps the guest's name
+if (guest) {
+  document.getElementById("introTo").textContent = `إلى ${guest}`;
+  document.getElementById("guestName").value = guest;
+}
+
+// music
+let audio = null;
+const music = document.getElementById("music");
+if (WEDDING.song) {
+  audio = new Audio(WEDDING.song);
+  audio.loop = true;
+  music.hidden = false;
+  music.addEventListener("click", () => {
+    if (audio.paused) audio.play().catch(() => {}); else audio.pause();
+  });
+  audio.addEventListener("play", () => { music.setAttribute("aria-pressed", "true"); music.setAttribute("aria-label", "إيقاف الموسيقى"); });
+  audio.addEventListener("pause", () => { music.setAttribute("aria-pressed", "false"); music.setAttribute("aria-label", "تشغيل الموسيقى"); });
+}
+
+// envelope
+const intro = document.getElementById("intro");
+const brooch = document.getElementById("brooch");
+root.classList.add("locked");
+function openInvite() {
+  if (intro.classList.contains("is-opening")) return;
+  if (audio) audio.play().catch(() => {});
+  const finish = () => {
+    intro.classList.add("is-gone");
+    root.classList.remove("locked");
+    root.classList.add("ready-anim");
+    setTimeout(() => { intro.hidden = true; }, 1000);
+  };
+  if (reduceMotion) { finish(); return; }
+  intro.classList.add("is-opening");
+  scatterPetals();
+  // the envelope fades while the petals are still in the air, so the page shows through them with no empty pause
+  setTimeout(finish, 700);
+}
+
+// ivory, blush and champagne petals: most burst out of the leaf, the rest fall from the top a moment later
+const PETAL_COLORS = [["#FFFDF8", "#F1E2CF"], ["#FBEFEA", "#EBC9C0"], ["#F8EEDD", "#E2C99A"], ["#FFF8F2", "#F0D3CB"]];
+function scatterPetals() {
+  const layer = document.createElement("div");
+  layer.className = "petals";
+  layer.setAttribute("aria-hidden", "true");
+  document.body.appendChild(layer);
+  const W = innerWidth, H = innerHeight;
+  const rect = brooch.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  let longest = 0;
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement("i");
+    const [c1, c2] = PETAL_COLORS[i % PETAL_COLORS.length];
+    p.className = "petal";
+    p.style.setProperty("--w", rnd(13, 24).toFixed(1) + "px");
+    p.style.setProperty("--c1", c1);
+    p.style.setProperty("--c2", c2);
+    layer.appendChild(p);
+    const burst = i < 38;
+    const x0 = burst ? cx : rnd(-20, W + 20), y0 = burst ? cy : rnd(-60, -20);
+    const a = rnd(0, Math.PI * 2), r = rnd(80, Math.max(W, 360) * .6);
+    const x1 = burst ? cx + Math.cos(a) * r : x0 + rnd(-40, 40);
+    const y1 = burst ? cy + Math.sin(a) * r * .7 : rnd(H * .1, H * .35);
+    const x2 = x1 + rnd(-90, 90), y2 = H + 40;
+    const r0 = rnd(0, 360), spin = rnd(240, 620) * (Math.random() < .5 ? -1 : 1);
+    const duration = rnd(3200, 5200), delay = burst ? rnd(0, 250) : rnd(500, 1600);
+    longest = Math.max(longest, duration + delay);
+    p.animate([
+      { transform: `translate(${x0}px, ${y0}px) rotate(${r0}deg) scale(.3)`, opacity: 0 },
+      { transform: `translate(${x1}px, ${y1}px) rotate(${r0 + spin * .3}deg) rotateX(160deg) scale(1)`, opacity: 1, offset: .22 },
+      { transform: `translate(${(x1 + x2) / 2 + rnd(-40, 40)}px, ${(y1 + y2) / 2}px) rotate(${r0 + spin * .65}deg) rotateX(380deg) scale(1)`, opacity: 1, offset: .62 },
+      { transform: `translate(${x2}px, ${y2}px) rotate(${r0 + spin}deg) rotateX(600deg) scale(.9)`, opacity: .85 }
+    ], { duration, delay, easing: "cubic-bezier(.2,.6,.4,1)", fill: "both" });
+  }
+  setTimeout(() => layer.remove(), longest + 200);
+}
+brooch.addEventListener("click", openInvite);
+setTimeout(() => brooch.focus({ preventScroll: true }), 300);
+
+// reply
+const form = document.getElementById("form");
+const countField = document.getElementById("countField");
+form.addEventListener("change", (e) => { if (e.target.name === "attend") countField.hidden = e.target.value === "no"; });
+// replies go to the bride's email through FormSubmit (the first message asks her to activate it once)
+const sendBtn = document.getElementById("sendBtn");
+const sendError = document.getElementById("sendError");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("guestName").value.trim();
+  const err = document.getElementById("nameError");
+  if (!name) { err.hidden = false; document.getElementById("guestName").focus(); return; }
+  err.hidden = true;
+  sendError.hidden = true;
+  const yes = form.attend.value === "yes";
+  const count = Number(document.getElementById("guestCount").value);
+  const wish = document.getElementById("wish").value.trim();
+
+  sendBtn.disabled = true;
+  sendBtn.textContent = "جارٍ الإرسال…";
+  try {
+    const res = await fetch(`https://formsubmit.co/ajax/${WEDDING.email}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        _subject: `${yes ? "تأكيد حضور" : "اعتذار عن الحضور"} من ${name}`,
+        _template: "table",
+        _captcha: "false",
+        Name: name,
+        Attending: yes ? "Yes" : "No",
+        Guests: yes ? count : 0,
+        Message: wish || "—"
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || String(data.success) !== "true") throw new Error(data.message || res.status);
+    document.getElementById("sentText").textContent = yes
+      ? `شكرًا يا ${name}، وصلنا ردك ونتطلع لرؤيتك.`
+      : `شكرًا يا ${name}، وصلتنا رسالتك وسنفتقدك.`;
+    document.getElementById("sent").hidden = false;
+    form.querySelectorAll("input, select, textarea").forEach((el) => { el.disabled = true; });
+    sendBtn.hidden = true;
+    document.getElementById("sent").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest" });
+  } catch (ex) {
+    sendError.textContent = `لم يُرسَل ردك بسبب مشكلة في الاتصال. حاول مرة أخرى، أو أرسله إلى ${WEDDING.email}`;
+    sendError.hidden = false;
+  } finally {
+    sendBtn.disabled = false;
+    sendBtn.textContent = "أرسل ردّي";
+  }
+});
+</script>
+</body>
+</html>
