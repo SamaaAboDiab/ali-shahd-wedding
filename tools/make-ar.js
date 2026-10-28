@@ -91,9 +91,9 @@ h2.script { line-height: 1.5; }
   [`<p class="intro-hint">Tap the gold leaf to open</p>`, `<p class="intro-hint">اضغط على الورقة الذهبية لفتح الدعوة</p>`],
 
   // opening page
-  [`<p>The <span data-groom-family></span> Family</p>`, `<p>عائلة <span data-groom-family></span></p>`],
+  [`<p><span data-groom-family></span> Family</p>`, `<p>عائلة <span data-groom-family></span></p>`],
   [`<span class="amp-sm" aria-hidden="true">&amp;</span>`, `<span class="amp-sm" aria-hidden="true">و</span>`],
-  [`<p>The <span data-bride-family></span> Family</p>`, `<p>عائلة <span data-bride-family></span></p>`],
+  [`<p><span data-bride-family></span> Family</p>`, `<p>عائلة <span data-bride-family></span></p>`],
   [`invite you to celebrate the marriage of their children`, `يتشرفون بدعوتكم لمشاركتهم فرحة زفاف أبنائهم`],
   [`<span class="sr-only">and</span>`, `<span class="sr-only">و</span>`],
   [`<text x="120" y="54" text-anchor="middle" font-size="84" fill="url(#goldG)" stroke="#8A6A2E" stroke-width=".6" style="font-family: var(--f-script)">&amp;</text>`,
@@ -162,7 +162,10 @@ h2.script { line-height: 1.5; }
   groom: "عَلِيّ",
   brideFamily: "حجاج",
   groomFamily: "الجزيري",`],
-  [`  venue: "Mass Hall",`, `  venue: "قاعة ماس",`],
+  [`  venue: "Mass Hall",`, `  venue: "قاعة ماس للحفلات",`],
+  [`  address: "Fuwwah, Kafr El Sheikh",`, `  address: "فوه، كفر الشيخ",`],
+  [`alt="QR code that opens the hall on Google Maps"`, `alt="رمز QR يفتح موقع القاعة على خرائط جوجل"`],
+  [`<figcaption>Scan to open the location</figcaption>`, `<figcaption>امسح الرمز لفتح موقع القاعة</figcaption>`],
   [`setAll("[data-groom-family]", WEDDING.groomFamily);`, `setAll("[data-groom-family]", WEDDING.groomFamily);
 // nastaliq draws a ه inside a word as a small hook; in the names it is shown as the two-eyed ھ, the shape Arabic readers know
 document.querySelectorAll(".names .n, .closing .n span").forEach((el) => { el.textContent = el.textContent.replace(/ه/g, "ھ"); });

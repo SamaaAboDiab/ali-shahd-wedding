@@ -287,6 +287,9 @@ h2.script { font-size: clamp(2.2rem, 10.5vw, 3.4rem); margin-bottom: 14px; text-
 .address { margin: 4px 0 0; color: var(--muted); }
 .map { margin: 22px auto 0; aspect-ratio: 4 / 3; max-width: 100%; border: 1px solid var(--line); padding: 5px; background: var(--pearl); }
 .map iframe { width: 100%; height: 100%; border: 0; display: block; filter: sepia(.25) saturate(.8); }
+.qr { margin: 22px auto 0; display: grid; justify-items: center; gap: 8px; }
+.qr img { width: 140px; height: 140px; display: block; border: 1px solid var(--line); padding: 5px; background: var(--pearl); }
+.qr figcaption { color: var(--muted); font-style: italic; }
 
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
 .btn {
@@ -704,6 +707,10 @@ h2.script { line-height: 1.5; }
       <p class="venue" data-venue></p>
       <p class="address" data-address></p>
       <div class="map" id="map" hidden></div>
+      <figure class="qr" id="qr">
+        <img src="assets/venue-qr.svg" alt="رمز QR يفتح موقع القاعة على خرائط جوجل" width="140" height="140">
+        <figcaption>امسح الرمز لفتح موقع القاعة</figcaption>
+      </figure>
       <div class="actions">
         <a class="btn btn-gold" id="mapLink" href="#" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
@@ -807,10 +814,11 @@ const WEDDING = {
   // wedding day and time, Cairo time (7 PM)
   date: "2026-11-15T19:00:00+02:00",
   durationHours: 5,
-  venue: "قاعة ماس",
-  address: "",
-  // Google Maps link to the hall; leave "" to hide the directions button
-  mapUrl: "",
+  venue: "قاعة ماس للحفلات",
+  address: "فوه، كفر الشيخ",
+  // Google Maps link to the hall; leave "" to hide the directions button and the QR code
+  // (assets/venue-qr.svg encodes this same link; regenerate it if the link changes)
+  mapUrl: "https://maps.app.goo.gl/9TqexwMxYtHWJRp48",
   // map shown inside the page; leave "" to hide it
   mapEmbed: "",
   // replies and wishes arrive at this email
@@ -929,7 +937,7 @@ WEDDING.evening.forEach((p) => {
 
 // links and map
 if (WEDDING.mapUrl) document.getElementById("mapLink").href = WEDDING.mapUrl;
-else document.getElementById("mapLink").hidden = true;
+else document.getElementById("mapLink").hidden = document.getElementById("qr").hidden = true;
 const stamp = (d) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 const end = new Date(when.getTime() + WEDDING.durationHours * 3600e3);
 document.getElementById("calLink").href =
