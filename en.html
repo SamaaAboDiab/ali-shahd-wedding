@@ -990,13 +990,16 @@ function scatterPetals() {
 brooch.addEventListener("click", openInvite);
 setTimeout(() => brooch.focus({ preventScroll: true }), 300);
 
-// guestbook: read and add wishes through Supabase's REST API; the table only lets visitors read and add, never change or delete
+// Supabase's REST API: visitors can read and add wishes, and add replies they can't read back; nothing can be changed or deleted
 const wishesSec = document.getElementById("wishesSec");
 const wishesList = document.getElementById("wishes");
-const guestbook = WEDDING.supabaseUrl && WEDDING.supabaseKey
-  ? (query = "", init = {}) => fetch(`${WEDDING.supabaseUrl.replace(/\/$/, "")}/rest/v1/wishes${query}`,
+const db = WEDDING.supabaseUrl && WEDDING.supabaseKey
+  ? (table, query = "", init = {}) => fetch(`${WEDDING.supabaseUrl.replace(/\/$/, "")}/rest/v1/${table}${query}`,
       { ...init, headers: { apikey: WEDDING.supabaseKey, "Content-Type": "application/json", ...init.headers } })
   : null;
+const dbAdd = (table, row) => db
+  ? db(table, "", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(row) }).then((r) => r.ok, () => false)
+  : Promise.resolve(false);
 function showWish({ name, message }, first) {
   const li = document.createElement("li");
   const p = document.createElement("p");
@@ -1008,8 +1011,8 @@ function showWish({ name, message }, first) {
   first ? wishesList.prepend(li) : wishesList.append(li);
   document.getElementById("wishesEmpty").hidden = true;
 }
-if (guestbook) {
-  guestbook("?select=name,message&order=created_at.desc&limit=300")
+if (db) {
+  db("wishes", "?select=name,message&order=created_at.desc&limit=300")
     .then((res) => res.ok ? res.json() : Promise.reject(res.status))
     .then((rows) => {
       rows.forEach((w) => showWish(w));
@@ -1023,7 +1026,8 @@ if (guestbook) {
 const form = document.getElementById("form");
 const countField = document.getElementById("countField");
 form.addEventListener("change", (e) => { if (e.target.name === "attend") countField.hidden = e.target.value === "no"; });
-// replies go to the bride's email through FormSubmit (the first message asks her to activate it once)
+// each reply is saved in Supabase (the "replies" table, seen only from the dashboard) and also sent to the bride's email
+// through FormSubmit (the first message asks her to activate it once); it counts as sent when either one gets it
 const sendBtn = document.getElementById("sendBtn");
 const sendError = document.getElementById("sendError");
 form.addEventListener("submit", async (e) => {
@@ -1040,7 +1044,7 @@ form.addEventListener("submit", async (e) => {
   sendBtn.disabled = true;
   sendBtn.textContent = "Sending…";
   try {
-    const res = await fetch(`https://formsubmit.co/ajax/${WEDDING.email}`, {
+    const mailed = fetch(`https://formsubmit.co/ajax/${WEDDING.email}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({
@@ -1052,15 +1056,11 @@ form.addEventListener("submit", async (e) => {
         Guests: yes ? count : 0,
         Message: wish || "—"
       })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || String(data.success) !== "true") throw new Error(data.message || res.status);
-    // the reply already reached the email, so a wish that fails to reach the guestbook is not shown as an error
-    if (wish && guestbook) {
-      const saved = await guestbook("", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ name, message: wish }) })
-        .then((r) => r.ok, () => false);
-      if (saved) { showWish({ name, message: wish }, true); wishesSec.hidden = false; }
-    }
+    }).then(async (res) => res.ok && String((await res.json().catch(() => ({}))).success) === "true", () => false);
+    const stored = dbAdd("replies", { name, attending: yes, guests: yes ? count : 0, message: wish || null });
+    if (!(await Promise.all([mailed, stored])).includes(true)) throw new Error("reply not delivered");
+    // the reply itself got through, so a wish that fails to reach the guestbook is not shown as an error
+    if (wish && await dbAdd("wishes", { name, message: wish })) { showWish({ name, message: wish }, true); wishesSec.hidden = false; }
     document.getElementById("sentText").textContent = yes
       ? `Thank you, ${name}. Your reply reached us and we can’t wait to see you.`
       : `Thank you, ${name}. Your note reached us, and we’ll miss you.`;

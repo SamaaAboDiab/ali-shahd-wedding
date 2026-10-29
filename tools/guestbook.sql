@@ -17,3 +17,19 @@ create policy "anyone can read wishes" on public.wishes
 
 create policy "anyone can add a wish" on public.wishes
   for insert to anon with check (true);
+
+-- Every reply (attending or not, number of guests, message), kept private: visitors can add a reply but can't read
+-- any back. See them in Table Editor > replies; the email through FormSubmit is a second copy.
+create table public.replies (
+  id bigint generated always as identity primary key,
+  created_at timestamptz not null default now(),
+  name text not null check (char_length(trim(name)) between 1 and 80),
+  attending boolean not null,
+  guests smallint not null check (guests between 0 and 5),
+  message text check (char_length(message) <= 1000)
+);
+
+alter table public.replies enable row level security;
+
+create policy "anyone can send a reply" on public.replies
+  for insert to anon with check (true);
