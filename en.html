@@ -342,6 +342,17 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
 .sent { border: 1px solid var(--gold); padding: 18px; text-align: center; background: var(--paper); }
 .sent p { margin: 0 0 12px; }
 
+/* guestbook: each wish on its own small card, newest first; a long list scrolls inside the page */
+.wishes {
+  list-style: none; margin: 22px 0 0; padding: 4px; display: grid; gap: 12px;
+  max-height: 62svh; overflow-y: auto; overscroll-behavior: contain; text-align: center;
+}
+.wishes li { border: 1px solid var(--line); background: #FFFFFF; padding: 16px 18px; }
+.wishes p { margin: 0; font-style: italic; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-line; }
+.wishes cite { display: block; margin-top: 8px; font-style: normal; font-weight: 600; color: var(--gold-deep); }
+.wishes cite::before { content: "— "; }
+#wishesEmpty a { color: var(--gold-deep); }
+
 /* couple photo, set in an arched window like the top of a framed portrait */
 .couple {
   position: relative;
@@ -694,6 +705,16 @@ fieldset.field { border: 0; margin: 0; padding: 0; min-width: 0; }
     </div>
   </section>
 
+  <!-- guestbook: the guests' wishes, shown to everyone -->
+  <section class="page" id="wishesSec" aria-labelledby="t-wishes" hidden>
+    <div class="sheet">
+      <h2 class="script" id="t-wishes">Wishes for the couple</h2>
+      <svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><use href="#orn"/></svg>
+      <ul class="wishes" id="wishes" aria-live="polite"></ul>
+      <p class="small" id="wishesEmpty" hidden>No wishes yet. <a href="#t-reply">Leave the first one</a></p>
+    </div>
+  </section>
+
   <!-- closing -->
   <section class="page closing" aria-label="Closing">
     <div class="sheet">
@@ -741,6 +762,10 @@ const WEDDING = {
   mapEmbed: "",
   // replies and wishes arrive at this email
   email: "sh223524@gmail.com",
+  // guestbook: wishes are saved in a free Supabase project and shown to everyone (set it up with tools/guestbook.sql);
+  // the project URL and its anon (publishable) key, from Project Settings > API. Leave "" to hide the guestbook
+  supabaseUrl: "https://bzyowvcaqoplvundkkmf.supabase.co",
+  supabaseKey: "sb_publishable_uWBkkHijHF9MC5NLADz7BQ_otsSiURr",
   // couple photo with the background removed, placed next to this page; leave "" to hide it
   photo: "couple.jpg",
   // song file placed next to this page (e.g. "song.mp3"); leave "" for no music
@@ -965,6 +990,35 @@ function scatterPetals() {
 brooch.addEventListener("click", openInvite);
 setTimeout(() => brooch.focus({ preventScroll: true }), 300);
 
+// guestbook: read and add wishes through Supabase's REST API; the table only lets visitors read and add, never change or delete
+const wishesSec = document.getElementById("wishesSec");
+const wishesList = document.getElementById("wishes");
+const guestbook = WEDDING.supabaseUrl && WEDDING.supabaseKey
+  ? (query = "", init = {}) => fetch(`${WEDDING.supabaseUrl.replace(/\/$/, "")}/rest/v1/wishes${query}`,
+      { ...init, headers: { apikey: WEDDING.supabaseKey, "Content-Type": "application/json", ...init.headers } })
+  : null;
+function showWish({ name, message }, first) {
+  const li = document.createElement("li");
+  const p = document.createElement("p");
+  const cite = document.createElement("cite");
+  p.textContent = message;
+  cite.textContent = name;
+  p.dir = cite.dir = "auto";  // each wish reads in its own language's direction
+  li.append(p, cite);
+  first ? wishesList.prepend(li) : wishesList.append(li);
+  document.getElementById("wishesEmpty").hidden = true;
+}
+if (guestbook) {
+  guestbook("?select=name,message&order=created_at.desc&limit=300")
+    .then((res) => res.ok ? res.json() : Promise.reject(res.status))
+    .then((rows) => {
+      rows.forEach((w) => showWish(w));
+      document.getElementById("wishesEmpty").hidden = rows.length > 0;
+      wishesSec.hidden = false;
+    })
+    .catch(() => {});  // if the guestbook can't be reached the page simply stays hidden
+}
+
 // reply
 const form = document.getElementById("form");
 const countField = document.getElementById("countField");
@@ -1001,6 +1055,12 @@ form.addEventListener("submit", async (e) => {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || String(data.success) !== "true") throw new Error(data.message || res.status);
+    // the reply already reached the email, so a wish that fails to reach the guestbook is not shown as an error
+    if (wish && guestbook) {
+      const saved = await guestbook("", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ name, message: wish }) })
+        .then((r) => r.ok, () => false);
+      if (saved) { showWish({ name, message: wish }, true); wishesSec.hidden = false; }
+    }
     document.getElementById("sentText").textContent = yes
       ? `Thank you, ${name}. Your reply reached us and we can’t wait to see you.`
       : `Thank you, ${name}. Your note reached us, and we’ll miss you.`;

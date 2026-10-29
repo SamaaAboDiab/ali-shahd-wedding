@@ -131,6 +131,8 @@ h2.script { line-height: 1.5; }
   [`A note for the couple <span class="small">(optional)</span>`, `رسالة للعروسين <span class="small">(اختياري)</span>`],
   [`placeholder="Your wishes for Ali and Shahd"`, `placeholder="تمنياتك لعلي وشهد"`],
   [`type="submit">Send my reply</button>`, `type="submit">أرسل ردّي</button>`],
+  [`>Wishes for the couple</h2>`, `>دفتر التهاني</h2>`],
+  [`No wishes yet. <a href="#t-reply">Leave the first one</a>`, `لم تصل أي تهنئة بعد. <a href="#t-reply">اكتب أول تهنئة</a>`],
 
   // closing
   [`aria-label="Closing"`, `aria-label="الختام"`],
